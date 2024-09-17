@@ -15,14 +15,45 @@ h3 {
     color: #ccc;
 }
 
+h4 {
+    color: #ccc;
+}
+
 p {
     color: #ccc;
     padding: 5px;
 }
 
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 10px;
+  }
+  
+  .one {
+    width: 15%;
+    float: left;
+  }
+  
+  .two {
+    margin-left: 15%;
+  }
+
+#cityname {
+    color: #000000;
+}
+
+#citieslist {
+    background-color: rgb(38, 42, 46);
+}
+
 #forecastholder {
     display: block;
     float: left;
+}
+
+#forecastNow {
+    border: 4px solid #ccc;
 }
 
 #forecasts {

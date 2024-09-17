@@ -5,18 +5,24 @@
 </head>
 
 <body>
+<section class="container">
+    <div class="one">
+        <h3> Input a City </h3>
+        <form>
+            <textarea id="cityname" placeholder="Enter a City" class="textbox"></textarea>
+            <button id="myBtn">Submit</button>
+        </form>
+        <div id="citieslist">
+            
+        </div>
+    </div>
 
-<h3> Input a City </h3>
-<form action="/action_page.php">
-    <label for="cityname">City</label>
-    <input type="text" id="cityname" name="cityname"><br><br>
-    <input type="submit" value="Submit">
-</form>
-
-<div id="forecastholder">
-    <h1> 5-Day Forecast </h1>
-    <div id="forecast" class="h-auto p-20 border-solid border-2 border-black w-4/5"></div>
-</div>
+    <div id="forecastholder" class="two">
+        <div id="currentForecast"></div>
+        <h1> 5-Day Forecast </h1>
+        <div id="forecast" class="h-auto p-20 border-solid border-2 border-black w-4/5"></div>
+    </div>
+</section>
 <script src="./Assets/js/script.js"> </script>
 </body>
 </html> 

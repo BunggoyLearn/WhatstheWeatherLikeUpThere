@@ -1,14 +1,52 @@
 const APIkey = 'c57586f78199aaa4318f82049325b058';
+const citynametext = document.getElementById('cityname');
+const button = document.getElementById('myBtn');
+const previousCities = JSON.parse(localStorage.getItem('latLonArray'))
 
-const city = 'London';
-const limit = '';
+if (previousCities !== null) {
+    let pastCities = '';
+    for (cityIndex in previousCities) {
+        const pastCity = previousCities[cityIndex].city
+        console.log(pastCity);
+        pastCities += `
+            <div>
+                <h3> ${pastCity} <h3>
+            </div>
+        `
+    }
+    document.getElementById('citieslist').innerHTML = pastCities;
+}
+
+//adds click event to submit button to start city lookup
+button.addEventListener('click', (event) => {
+    const pickedCity = citynametext.value
+    NametoCoords(pickedCity);
+    event.preventDefault()
+});
+
 // Grabs lat and Lon from City name
-const getLatLong = async () => {
+const getLatLong = async (cityName, limitNumber) => {
+    const city = cityName
+    const limit = limitNumber
+    console.log(`${city} + ${limit}`)
     const result = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=${limit}&appid=${APIkey}`);
 
     const data = await result.json();
     return data[0]
 };
+
+//Gets current forecast of area
+const currentForecastByArea = async (lat, lon) => {
+    const result = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIkey}`);
+    const returns = await result.json();
+    const currentForecast = {
+        Icon: returns.weather[0].icon,
+        Temp: returns.main.temp,
+        Wind: returns.wind.speed,
+        Humidity: returns.main.humidity,
+    };
+    return currentForecast;
+}
 
 //Returns Forecast by lat and lon
 const forecastByArea = async (lat, lon) => {
@@ -33,10 +71,11 @@ const forecastByArea = async (lat, lon) => {
     return middayarray;
 };
 
-//Creates a record of previously looked up cities and generates their lat and lon
-const NametoCoords = async () => {
-    const name = `${city}`
-    const cities = await getLatLong(name);
+//Creates a record of looked up cities and generates their lat and lon
+const NametoCoords = async (pickedCity) => {
+    const cityName = pickedCity;
+    const limitNumber = '';
+    const cities = await getLatLong(cityName, limitNumber);
     const precastInfo = {
         city: cities.name,
         latitude: cities.lat,
@@ -47,13 +86,10 @@ const NametoCoords = async () => {
         const latLonArray = [];
         latLonArray.push(precastInfo);
         localStorage.setItem('latLonArray', JSON.stringify(latLonArray));
-        console.log(latLonArray);
     } else {
         latLonArray.push(precastInfo);
         localStorage.setItem('latLonArray', JSON.stringify(latLonArray));
-        console.log(precastInfo);
     }
-    console.log(latLonArray);
     CoordstoWeather();
 };
 //Generates the API coords to a functioning weather display
@@ -63,6 +99,20 @@ const CoordstoWeather = async () => {
     console.log(i);
     const lat = coords[0].latitude
     const lon = coords[0].longitude
+    const currentForecast = await currentForecastByArea(lat, lon);
+    let currentInfo = '';
+    const realIcon = `https://openweathermap.org/img/wn/${currentForecast.Icon}@2x.png`
+    const fahTemp = Math.round(((currentForecast.Temp - 273.15) * 9 / 5 + 32) * 10) / 10
+    currentInfo += `
+        <div id="forecastNow">
+            <h2> Right Now in ${citynametext.value} </h2>
+            <img src="${realIcon}">
+            <h4> Temp: ${fahTemp} </h4>
+            <h4> Humidity: ${currentForecast.Humidity} g/kg </h4>
+            <h4> Wind Speed: ${currentForecast.Wind} MPH </h4>
+        </div>
+        `
+    document.getElementById('currentForecast').innerHTML = currentInfo;
     const forecasts = await forecastByArea(lat, lon);
     let infoPlacer = '';
     for (forecastIndex in forecasts) {
@@ -83,5 +133,3 @@ const CoordstoWeather = async () => {
     }
     document.getElementById('forecast').innerHTML = infoPlacer;
 }
-
-NametoCoords();
